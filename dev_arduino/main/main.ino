@@ -22,7 +22,33 @@ TFT_eSprite thunderbolt = TFT_eSprite(&tft);
 float xpos_past, ypos_past, angle, xpos, ypos;
 float xpos_past_2, ypos_past_2, angle_2, xpos_2, ypos_2;
 
+uint16_t TFT_COLORS[6][5] = {
+    {TFT_RED, TFT_GRIS, TFT_GRIS, TFT_GRIS, TFT_GRIS},
+    {TFT_ORANGE, TFT_GRIS, TFT_GRIS, TFT_GRIS, TFT_GRIS},
+    {TFT_BLEU, TFT_BLEU, TFT_GRIS, TFT_GRIS, TFT_GRIS},
+    {TFT_BLEU, TFT_BLEU, TFT_BLEU, TFT_GRIS, TFT_GRIS},
+    {TFT_BLEU, TFT_BLEU, TFT_BLEU, TFT_BLEU, TFT_GRIS},
+    {TFT_BLEU, TFT_BLEU, TFT_BLEU, TFT_BLEU, TFT_BLEU}
+  };
+
+struct WedgeData {
+    int x1;
+    int y1;
+    int x2;
+    int y2;
+    int width;
+    int length;
+  };
+
 String day_of_week[7] = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+
+
+WedgeData wedgeData[4] = {
+  {9, 4, 9, 60, 2, 6},
+  {9, 12, 9, 40, 1, 2},
+  {9, 4, 9, 100, 2, 6},
+  {9, 16, 9, 80, 1, 2}
+};
 
 void def_init(TFT_eSprite* sprite, int width, int height, const unsigned short* data = nullptr, int x=-1, int y=-1){
   sprite->setColorDepth(8);
@@ -66,7 +92,8 @@ void setup() {
 }
 
 void loop() {
-  battery_draw(20);
+  int pastMillis = millis();  
+  battery_draw(85);
 
   DateTime now = rtc.now(); 
 
@@ -75,27 +102,15 @@ void loop() {
   drawTime(now);
 
   background.pushSprite(0, 0);
+  int currentMillis = millis();  
+  float fps = (1.0/(currentMillis - pastMillis))*1000;
+  Serial.println(fps); 
 }
 
 void drawTime(DateTime now){
-  TFT_eSprite* sprite_array[] = {&minuteneedle, &hourneedle, &secondneedle};
-  int timeFactors[] = {now.hour() * 30, now.minute() * 6, now.second() * 6};
+  TFT_eSprite* sprite_array[3] = {&minuteneedle, &hourneedle, &secondneedle};
 
-  struct WedgeData {
-    int x1;
-    int y1;
-    int x2;
-    int y2;
-    int width;
-    int length;
-  };
-  
-  WedgeData wedgeData[] = {
-    {9, 4, 9, 60, 2, 6},
-    {9, 12, 9, 40, 1, 2},
-    {9, 4, 9, 100, 2, 6},
-    {9, 16, 9, 80, 1, 2}
-  };
+  int timeFactors[3] = {now.hour() * 30, now.minute() * 6, now.second() * 6};
 
   for (int i=0; i < (sizeof(sprite_array) / sizeof(sprite_array[0]) - 1); i++){
     sprite_array[i]->drawWedgeLine(wedgeData[i*2].x1,wedgeData[i*2].y1,wedgeData[i*2].x2,wedgeData[i*2].y2,wedgeData[i*2].width,wedgeData[i*2].length,TFT_WHITE);
@@ -115,15 +130,6 @@ void battery_draw(int pourcentage) {
   background.setSwapBytes(false);
 
   int result = (pourcentage > 80) ? 5 : map(pourcentage, 1, 80, 0, 5);
-
-  uint16_t TFT_COLORS[6][5] = {
-    {TFT_RED, TFT_GRIS, TFT_GRIS, TFT_GRIS, TFT_GRIS},
-    {TFT_ORANGE, TFT_GRIS, TFT_GRIS, TFT_GRIS, TFT_GRIS},
-    {TFT_BLEU, TFT_BLEU, TFT_GRIS, TFT_GRIS, TFT_GRIS},
-    {TFT_BLEU, TFT_BLEU, TFT_BLEU, TFT_GRIS, TFT_GRIS},
-    {TFT_BLEU, TFT_BLEU, TFT_BLEU, TFT_BLEU, TFT_GRIS},
-    {TFT_BLEU, TFT_BLEU, TFT_BLEU, TFT_BLEU, TFT_BLEU}
-  };
 
   for (int i = 0; i < 5; ++i) {
     background.fillCircle(100 + i * 10, 190, 2, TFT_COLORS[result][i]);
