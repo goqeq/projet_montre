@@ -22,6 +22,8 @@ TFT_eSprite thunderbolt = TFT_eSprite(&tft);
 float xpos_past, ypos_past, angle, xpos, ypos;
 float xpos_past_2, ypos_past_2, angle_2, xpos_2, ypos_2;
 
+String day_of_week[7] = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+
 void def_init(TFT_eSprite* sprite, int width, int height, const unsigned short* data = nullptr, int x=-1, int y=-1){
   sprite->setColorDepth(8);
 
@@ -38,7 +40,7 @@ void def_init(TFT_eSprite* sprite, int width, int height, const unsigned short* 
   }
 }
 
-void rtc_check(){
+void init(){
   if (!rtc.begin()) {
     Serial.println("Impossible de trouver le RTC");
     while (1);
@@ -48,7 +50,7 @@ void rtc_check(){
 void setup() {
   Serial.begin(9600);
 
-  rtc_check();
+  init();
 
   tft.init();
   tft.fillScreen(TFT_BLACK);
@@ -59,17 +61,18 @@ void setup() {
   def_init(&minuteneedle, 20, 110, nullptr, 9, 60);
   def_init(&hourneedle, 20, 120, nullptr, 9, 100);
   def_init(&hour_screen, 80, 50);
+  background.loadFont(nothing_font);
   hour_screen.setTextColor(TFT_WHITE,TFT_BLACK); 
-  hour_screen.setTextSize(1);
 }
 
 void loop() {
-  battery_draw(99);
+  battery_draw(20);
 
   DateTime now = rtc.now(); 
-  drawTime(now);
 
-  background.drawRoundRect(180, 100, 50, 20, 5, TFT_WHITE);
+  background.drawString(day_of_week[now.dayOfTheWeek()-1], 160, 112);
+  background.drawString(String(now.day()), 210, 112);
+  drawTime(now);
 
   background.pushSprite(0, 0);
 }
@@ -123,10 +126,10 @@ void battery_draw(int pourcentage) {
   };
 
   for (int i = 0; i < 5; ++i) {
-    background.fillCircle(96 + i * 12, 200, 2, TFT_COLORS[result][i]);
+    background.fillCircle(100 + i * 10, 190, 2, TFT_COLORS[result][i]);
   }
 
   background.setSwapBytes(true);
-  thunderbolt.pushToSprite(&background, 112, 210);
+  thunderbolt.pushToSprite(&background, 112, 205);
 }
 
