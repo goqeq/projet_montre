@@ -1,8 +1,6 @@
 #include <TFT_eSPI.h>
 #include "Sprites_data.h"
-#include <Wire.h>
 #include <RTClib.h>
-#include <WiFi.h>
 
 RTC_DS3231 rtc;
 TFT_eSPI tft = TFT_eSPI();
