@@ -10,9 +10,9 @@ TFT_eSPI tft = TFT_eSPI();
 
 #define center_x 120
 #define center_y 120
-#define diameter 119
 #define TFT_GRIS 0x3186
 #define TFT_BLEU 0x2418
+#define ColorDepth 8
 
 TFT_eSprite background_sprite = TFT_eSprite(&tft);
 TFT_eSprite secondneedle_sprite = TFT_eSprite(&tft);
@@ -45,28 +45,6 @@ WedgeData wedgeData[4] = {
   {9, 4, 9, 100, 2, 6},
   {9, 16, 9, 80, 1, 2}
 };
-
-/*  PUBLIC FUNCTION */
-
-void background::begin(){
-    tft.init();
-    tft.fillScreen(TFT_BLACK);
-    def_init_sprites(&background_sprite, 240, 240, background_data);
-    def_init_sprites(&thunder_sprite, 16, 16, thunderbolt_data);
-    def_init_sprites(&secondneedle_sprite, 10, 140, nullptr, 1, 100);
-    def_init_sprites(&minuteneedle_sprite, 20, 110, nullptr, 9, 60);
-    def_init_sprites(&hourneedle_sprite, 20, 120, nullptr, 9, 100);
-    def_init_sprites(&hour_sprite, 80, 50);
-    background_sprite.loadFont(nothing_font);
-    hour_sprite.setTextColor(TFT_WHITE,TFT_BLACK); 
-}
-
-void background::push_background(DateTime now, int percentage){
-    draw_battery();
-    draw_needle();
-    background_sprite.pushSprite(0, 0);
-}
-
 
 /*   PRIVATE FUNCTION   */
 
@@ -109,19 +87,51 @@ void background::draw_battery(int percentage_local) {
 
 /*   def_init_sprites   */
 
-void background::def_init_sprites(TFT_eSprite* sprite, int width, int height, const unsigned short* data = nullptr, int x=-1, int y=-1)
-{
-    sprite->setColorDepth(8);
+void background::def_init_sprites(TFT_eSprite* sprite, int width, int height, const unsigned short* data, int x, int y){
+    sprite->setColorDepth(ColorDepth);
 
     sprite->createSprite(width, height);
     sprite->fillSprite(TFT_BLACK);
 
-    if (y > -1){
-        sprite->setPivot(x,y);
-    }
+    sprite->setPivot(x,y);
 
-    if (data != nullptr){
-        sprite->setSwapBytes(true);
-        sprite->pushImage(0,0, width, height, data);
-    }
+    sprite->setSwapBytes(true);
+    sprite->pushImage(0,0, width, height, data);
+
+}
+
+void background::def_init_sprites(TFT_eSprite* sprite, int width, int height, const unsigned short* data){
+    sprite->setColorDepth(ColorDepth);
+
+    sprite->createSprite(width, height);
+    sprite->fillSprite(TFT_BLACK);
+
+    sprite->setSwapBytes(true);
+    sprite->pushImage(0,0, width, height, data);
+}
+
+void background::def_init_sprites(TFT_eSprite* sprite, int width, int height){
+    sprite->setColorDepth(ColorDepth);
+
+    sprite->createSprite(width, height);
+    sprite->fillSprite(TFT_BLACK);
+}
+/*  PUBLIC FUNCTION */
+
+void background::begin(){
+    tft.init();
+    def_init_sprites(&background_sprite, 240, 240, background_data);
+    def_init_sprites(&thunder_sprite, 16, 16, thunderbolt_data);
+    def_init_sprites(&secondneedle_sprite, 10, 140, nullptr, 1, 100);
+    def_init_sprites(&minuteneedle_sprite, 20, 110, nullptr, 9, 60);
+    def_init_sprites(&hourneedle_sprite, 20, 120, nullptr, 9, 100);
+    def_init_sprites(&hour_sprite, 80, 50);
+    background_sprite.loadFont(nothing_font);
+    hour_sprite.setTextColor(TFT_WHITE,TFT_BLACK); 
+}
+
+void background::push_background(DateTime now, int percentage){
+    draw_battery(percentage);
+    draw_needle(now);
+    background_sprite.pushSprite(0, 0);
 }
