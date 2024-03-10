@@ -4,7 +4,7 @@
 #include <Arduino.h>
 #include <TFT_eSPI.h>
 
-String day_of_week[7] = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
+const char* day_of_week[7] = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"};
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -18,7 +18,6 @@ TFT_eSprite background_sprite = TFT_eSprite(&tft);
 TFT_eSprite secondneedle_sprite = TFT_eSprite(&tft);
 TFT_eSprite minuteneedle_sprite = TFT_eSprite(&tft);
 TFT_eSprite hourneedle_sprite = TFT_eSprite(&tft);
-TFT_eSprite hour_sprite = TFT_eSprite(&tft);
 TFT_eSprite thunder_sprite = TFT_eSprite(&tft);
 
 uint16_t TFT_COLORS[6][5] = {
@@ -125,13 +124,13 @@ void background::begin(){
     def_init_sprites(&secondneedle_sprite, 10, 140, nullptr, 1, 100);
     def_init_sprites(&minuteneedle_sprite, 20, 110, nullptr, 9, 60);
     def_init_sprites(&hourneedle_sprite, 20, 120, nullptr, 9, 100);
-    def_init_sprites(&hour_sprite, 80, 50);
     background_sprite.loadFont(nothing_font);
-    hour_sprite.setTextColor(TFT_WHITE,TFT_BLACK); 
 }
 
 void background::push_background(DateTime now, int percentage){
     draw_battery(percentage);
+    background_sprite.drawString(day_of_week[now.dayOfTheWeek()-1], 160, 112);
+    background_sprite.drawString(String(now.day()), 210, 112);
     draw_needle(now);
     background_sprite.pushSprite(0, 0);
 }
