@@ -1,4 +1,5 @@
 {
     "cmake.sourceDirectory": "C:/Users/goran/projet_montre/dev_arduino/montre_VSC/.pio/libdeps/esp32dev/TFT_eSPI",
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "disabled",
+    "cmake.configureOnOpen": false
 }

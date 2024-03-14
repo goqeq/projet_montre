@@ -15,8 +15,8 @@
 #define AA_FONT_LARGE NotoSansBold36
 
 // Replace with your network credentials
-const char* ssid     = "VOO-065022";
-const char* password = "AJDQBWDO";
+const char* ssid     = "wifi maison";
+const char* password = "3B3CA2A0F4";
 
 // Define NTP Client to get time
 WiFiUDP ntpUDP;

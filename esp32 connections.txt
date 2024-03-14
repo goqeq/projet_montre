@@ -1,0 +1,14 @@
+miso : 19
+mosi : 23
+sclk : 18
+cs : 5
+dc : 14
+rst screen : 4
+
+
+scl : 22
+sda : 21
+rst touch : 27
+int : 35
+
+
